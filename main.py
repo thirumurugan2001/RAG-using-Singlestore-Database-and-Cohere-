@@ -5,7 +5,7 @@ from controller import *
 app = FastAPI()
 
 
-class Item(BaseModel):
+class Item(BaseModel): 
     Question: str
 
 # API to get the most relevant answer from the database
@@ -21,4 +21,4 @@ async def rag(item: Item):
         }
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8080)
