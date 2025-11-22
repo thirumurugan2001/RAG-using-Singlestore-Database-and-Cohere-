@@ -1,16 +1,14 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
 import uvicorn
-from controller import *
+from model import RAG
+from fastapi import FastAPI
+from controller import ragController
 app = FastAPI()
 
 
-class Item(BaseModel): 
-    Question: str
 
 # API to get the most relevant answer from the database
-@app.post("/rag/")
-async def rag(item: Item):
+@app.post("/chatbot/about/")
+async def rag(item: RAG):
     try :
         response = ragController(item.Question)
         return response
@@ -21,4 +19,4 @@ async def rag(item: Item):
         }
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8080)
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)

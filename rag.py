@@ -1,18 +1,20 @@
 from helper import dbconnection, get_embedding
 from ConnectChatBot import ConnectChatBot
 
-
 # Function to get the most relevant answer from the database
 def rag(Question):
     try:
         conn=dbconnection()
         cursor=conn.cursor()
         embedding = get_embedding(Question)
-        select_query = """SELECT description, dot_product(vector, JSON_ARRAY_PACK("{0}")) AS score FROM famousPlacesIndia ORDER BY score DESC LIMIT 1 """.format(embedding)
+        select_query = """SELECT description, dot_product(vector, JSON_ARRAY_PACK("{0}")) AS score FROM About ORDER BY score DESC LIMIT 2 """.format(embedding)
         cursor.execute(select_query) 
         rows = cursor.fetchall() 
+        conn.close()
+        knowledgeBaseData=f"{rows[0][0]} and {rows[1][0]}"
         if rows:
-            response = ConnectChatBot({"Question": rows[0][0] + " . Answer the question: " + Question})
+            response = ConnectChatBot(Question,knowledgeBaseData)
+            response =  knowledgeBaseData
             return {
                 "data":response,
                 "statusCode":200,
