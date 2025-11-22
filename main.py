@@ -1,21 +1,20 @@
 import uvicorn
-from model import RAG
 from fastapi import FastAPI
+from model import RAG
 from controller import ragController
+from middleware import setup_cors
 app = FastAPI()
+setup_cors(app)
 
-
-
-# API to get the most relevant answer from the database
 @app.post("/chatbot/about/")
 async def rag(item: RAG):
-    try :
+    try:
         response = ragController(item.Question)
         return response
     except Exception as e:
         return {
             "error": str(e),
-            "stratusCode": 500
+            "statusCode": 500
         }
 
 if __name__ == "__main__":

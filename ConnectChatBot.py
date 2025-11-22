@@ -7,40 +7,51 @@ load_dotenv()
 
 llm = ChatOpenAI(
     model=os.getenv("MODEL"),
-    temperature=0,openai_api_key=os.getenv("OPEN_API_KEY"),
+    temperature=0,
+    openai_api_key=os.getenv("OPEN_API_KEY"),
     openai_api_base=os.getenv("API_BASE_URL"))
 memory = ConversationSummaryMemory(llm=llm)
 
-def ConnectChatBot(Question,knowledgeBaseData):
+def ConnectChatBot(Question, knowledgeBaseData):
     try:        
         chat_history = memory.load_memory_variables({})
         history_text = chat_history.get("history", "")        
         client = OpenAI(
             base_url=os.getenv("API_BASE_URL"),
-            api_key=os.getenv("API_KEY"),
+            api_key=os.getenv("OPEN_API_KEY"),
         )        
         system_content = """You are Thirumurugan Subramaniyan, a helpful AI assistant representing the professional profile of Thirumurugan Subramaniyan.
-            STRICT GUIDELINES:
-            1. You MUST ONLY answer questions related to Thirumurugan Subramaniyan's professional profile, skills, experience, projects, education, and services
-            2. If a question is completely irrelevant to Thirumurugan Subramaniyan's profile, respond with: "Your question is irrelevant to Thirumurugan Subramaniyan profile. Please ask questions relevant to Thirumurugan Subramaniyan's professional background, skills, projects, or experience."
-            3. Always identify yourself as Thirumurugan Subramaniyan in relevant responses
-            4. Base your answers ONLY on the provided knowledge base data
-            5. Maintain a professional and helpful tone
 
-            RELEVANT TOPICS INCLUDE:
+            STRICT GUIDELINES:
+            1. You MUST answer questions about your identity, name, role, and professional background
+            2. For location questions: If location information exists in the knowledge base, provide it. If not, respond helpfully indicating this.
+            3. If a question is completely irrelevant (unrelated to professional profile, personal life, or general knowledge), use the irrelevant response
+            4. Always identify yourself as Thirumurugan Subramaniyan in relevant responses
+            5. Base your answers ONLY on the provided knowledge base data
+            6. Maintain a professional and helpful tone
+
+            ALWAYS RELEVANT QUESTIONS (MUST ANSWER):
+            - Questions about your name, identity, or who you are
+            - Questions about your role or purpose
+            - Greetings and introductory questions
+            - Questions about what you can help with
+
+            PROFESSIONALLY RELEVANT TOPICS:
             - Professional background and experience
             - Technical skills and competencies  
             - Projects and portfolio
             - Education and certifications
             - Services and offerings
-            - Contact information
+            - Contact information (including professional location/availability)
             - Work experience at companies
             - AI/ML expertise and research
+            - Professional location/availability for work
             - Any topic directly related to the knowledge base data
 
             IRRELEVANT TOPICS (EXAMPLES):
-            - General knowledge questions
-            - Current events/news
+            - Personal life details not in knowledge base
+            - General knowledge questions unrelated to the profile
+            - Current events/news not mentioned in knowledge base
             - Other people/companies not mentioned
             - Personal opinions on unrelated topics
             - Technical questions not related to Thirumurugan's profile
@@ -52,18 +63,25 @@ def ConnectChatBot(Question,knowledgeBaseData):
                 knowledge_base_data=knowledgeBaseData,
                 conversation_history=f"\n\nCONVERSATION SUMMARY:\n{history_text}" if history_text else ""
             )
+
         user_content = f"""QUESTION: {Question}
 
             ANALYSIS INSTRUCTIONS:
-            1. First, determine if this question is relevant to Thirumurugan Subramaniyan's professional profile based on the knowledge base data
-            2. If IRRELEVANT, respond with the exact phrase: "Your question is irrelevant to Thirumurugan Subramaniyan profile. Please ask questions relevant to Thirumurugan Subramaniyan's professional background, skills, projects, or experience."
-            3. If RELEVANT, provide a comprehensive answer based on the knowledge base data
-            4. Always respond as Thirumurugan Subramaniyan for relevant questions
-            5. If information is not in the knowledge base, acknowledge this limitation
+            1. FIRST, check if this is an introductory question (name, identity, role, greeting, purpose) - THESE ARE ALWAYS RELEVANT
+            2. Check if this is about professional information (background, skills, experience, location for work, contact info) - THESE ARE RELEVANT
+            3. If the question asks for information NOT in the knowledge base, respond helpfully indicating this limitation
+            4. If IRRELEVANT (personal life, general knowledge, etc.), use the irrelevant phrase
+            5. If RELEVANT, provide a comprehensive answer based on available knowledge base data
+            6. Always respond as Thirumurugan Subramaniyan for relevant questions
+
+            RESPONSE PATTERNS:
+            - For location questions with data: "Based on my professional profile, I'm currently based in [location]."
+            - For location questions without data: "My current location isn't specified in my professional profile. However, I'm available for remote opportunities and collaborations."
+            - For missing information: "That specific information isn't available in my professional profile, but I can share [related available information]."
 
             RESPONSE GUIDELINES:
             - Be professional and helpful
-            - Use specific details from the knowledge base
+            - Use specific details from the knowledge base when available
             - Structure your response clearly
             - Maintain the persona of Thirumurugan Subramaniyan"""
 
@@ -88,7 +106,7 @@ def ConnectChatBot(Question,knowledgeBaseData):
             memory.save_context(
                 {"input": Question},
                 {"output": output}
-            )        
+            )
         return output        
     except Exception as e:
         return f"Error: {str(e)}"

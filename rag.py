@@ -14,7 +14,6 @@ def rag(Question):
         knowledgeBaseData=f"{rows[0][0]} and {rows[1][0]}"
         if rows:
             response = ConnectChatBot(Question,knowledgeBaseData)
-            response =  knowledgeBaseData
             return {
                 "data":response,
                 "statusCode":200,
