@@ -25,8 +25,20 @@ def ragController(Question):
 def JobOpportunityController(recruiterName,recruiterPhone,recruiterMail,designation,organizationName,JOBDescription):
     try:
         if (recruiterName,recruiterPhone,recruiterMail,designation,organizationName,JOBDescription) != "":
-            send_candidate_alert(recruiterName,recruiterPhone,recruiterMail,designation,organizationName,JOBDescription)
-            send_recruiter_email(recruiterName,recruiterMail,designation,organizationName)
+            sendCandidateAlert =send_candidate_alert(recruiterName,recruiterPhone,recruiterMail,designation,organizationName,JOBDescription)
+            sendRecruiterRmail= send_recruiter_email(recruiterName,recruiterMail,designation,organizationName)
+            if sendCandidateAlert and sendRecruiterRmail:
+                return {
+                    "message":"Job Opportunity details sent successfully!",
+                    "statusCode":200,
+                    "Status":True
+                }
+            else:
+                return {
+                    "message":"Failed to send Job Opportunity details!",
+                    "statusCode":500,
+                    "Status":False
+                }
         else:
             return {
                 "message":"Invaild data !",
