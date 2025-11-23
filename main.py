@@ -1,12 +1,35 @@
 import uvicorn
 from fastapi import FastAPI
-from model import RAG
-from controller import ragController
+from model import *
 from middleware import setup_cors
+from controller import ragController,JobOpportunityController
 app = FastAPI()
 setup_cors(app)
 
 @app.post("/chatbot/about/")
+async def rag(item: RAG):
+    try:
+        response = ragController(item.Question)
+        return response
+    except Exception as e:
+        return {
+            "error": str(e),
+            "statusCode": 500
+        }
+
+@app.post("/contact/hireme/")
+async def rag(item: JobOpportunity):
+    try:
+        response = JobOpportunityController(item.recruiterName,item.recruiterPhone,item.recruiterMail,item.designation,item.organizationName,item.JOBDescription)
+        return response
+    except Exception as e:
+        return {
+            "error": str(e),
+            "statusCode": 500
+        }
+
+
+@app.post("/contact/client/")
 async def rag(item: RAG):
     try:
         response = ragController(item.Question)
