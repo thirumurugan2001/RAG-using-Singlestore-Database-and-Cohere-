@@ -10,3 +10,21 @@ class JobOpportunity(BaseModel):
     designation: str
     organizationName: str
     JOBDescription: str   
+
+class GeneralContact(BaseModel): 
+    Name: str
+    ContactNumber: str
+    ContactMail: str
+    Query: str
+
+class ClientContact(BaseModel): 
+    ClientName: str
+    ClientPhone: str
+    ClientMail: str
+    OrganizationType: str
+    OrganizationName: str
+    OrganizationLocation: str
+    TechStack:list
+    ProjectDescription: str
+    Timeline: str
+    Budget: str

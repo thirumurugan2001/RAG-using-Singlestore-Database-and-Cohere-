@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from model import *
 from middleware import setup_cors
-from controller import ragController,JobOpportunityController
+from controller import ragController,JobOpportunityController,GeneralContactController,ClientContactController
 app = FastAPI()
 setup_cors(app)
 
@@ -28,11 +28,21 @@ async def rag(item: JobOpportunity):
             "statusCode": 500
         }
 
+@app.post("/contact/general/")
+async def rag(item: GeneralContact):
+    try:
+        response = GeneralContactController(item.Name,item.ContactNumber,item.ContactMail,item.Query)
+        return response
+    except Exception as e:
+        return {
+            "error": str(e),
+            "statusCode": 500
+        }
 
 @app.post("/contact/client/")
-async def rag(item: RAG):
+async def rag(item: ClientContact):
     try:
-        response = ragController(item.Question)
+        response = ClientContactController(item.ClientName,item.ClientPhone,item.ClientMail,item.OrganizationType,item.OrganizationName,item.OrganizationLocation,item.TechStack,item.ProjectDescription,item.Timeline,item.Budget,)
         return response
     except Exception as e:
         return {
