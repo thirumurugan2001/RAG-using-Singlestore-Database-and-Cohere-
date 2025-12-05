@@ -1,4 +1,4 @@
-from helper import dbconnection, get_embedding
+from Helper import dbconnection, get_embedding
 from ConnectChatBot import ConnectChatBot
 
 # Function to get the most relevant answer from the database
